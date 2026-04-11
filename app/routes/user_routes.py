@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 from models.user_models import Users
 from services.user_services import (
     search_user_by_id,
@@ -8,29 +8,29 @@ from services.user_services import (
     delete_user_id,
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 
 
-@router.get("/users")
+@router.get("/", response_model=list[Users], status_code=status.HTTP_200_OK)
 async def get_users(skip: int = 0, limit: int = 10) -> list[Users]:
     return search_user(skip, limit)
 
 
-@router.get("/user/{id}")
+@router.get("/{id}", response_model=Users, status_code=status.HTTP_200_OK)
 async def get_user_by_id(id: int) -> Users | None:
     return search_user_by_id(id)
 
 
-@router.post("/user")
+@router.post("/", response_model=Users, status_code=status.HTTP_201_CREATED)
 async def post_create_user(user: Users) -> Users | None:
     return create_user(user)
 
 
-@router.put("/user")
+@router.put("/", response_model=Users, status_code=status.HTTP_200_OK)
 async def put_update_user(user: Users) -> Users | None:
     return update_user(user)
 
 
-@router.delete("/user/{id}")
+@router.delete("/{id}", response_model=str, status_code=status.HTTP_200_OK)
 async def delete_user(id: int) -> str:
     return delete_user_id(id)

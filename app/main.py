@@ -6,9 +6,4 @@ app = FastAPI(
     description="API for the backend of the application",
     version="1.0.0",
 )
-
-@app.get("/")
-async def home():
-    return {"message": "Welcome to the Backend API!"}
-
 app.include_router(user_routes.router)

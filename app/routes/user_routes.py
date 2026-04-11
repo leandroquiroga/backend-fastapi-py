@@ -1,12 +1,12 @@
 from fastapi import APIRouter, status
-from models.user_models import Users
-from services.user_services import (
-    search_user_by_id,
-    search_user,
+from models import Users
+from services import (
     create_user,
     update_user,
     delete_user_id,
 )
+
+from repositories import search_user, search_user_by_id
 
 router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 

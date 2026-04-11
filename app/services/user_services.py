@@ -20,7 +20,7 @@ def search_user_by_id(id: int) -> Users | None:
 
 def create_user(user: Users) -> Users | None:
     if exist_id(user.id):
-        raise HTTPException(status_code=400, detail=f"User {user.id} already exists")
+        raise HTTPException(status_code=400, detail=f"User already exists")
     users.append(user)
     return user
 

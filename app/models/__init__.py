@@ -1,1 +1,1 @@
-from .user_models import Users # type: ignore
+from .user_models import Users, AuthLogin # type: ignore

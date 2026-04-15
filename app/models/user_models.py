@@ -42,3 +42,8 @@ class User(BaseModel):
 
   class Config:
     from_attributes = True
+    
+class AuthToken(BaseModel):
+  """DTO para respuesta de token JWT"""
+  access_token: str
+  token_type: str = "bearer"

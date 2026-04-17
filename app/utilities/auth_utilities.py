@@ -3,9 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any
-
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
+from config import SECRET_KEY, ALGORITHM
 
 # Instancia de PasswordHash para el manejo de contraseñas.
 password_hash = PasswordHash.recommended()

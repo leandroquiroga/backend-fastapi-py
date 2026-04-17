@@ -1,8 +1,9 @@
 import jwt as pyjwt
 from fastapi import HTTPException, status, Depends
-from utilities import oauth2, verify_password, SECRET_KEY, ALGORITHM
+from utilities import oauth2, verify_password
 from models import User
 from repositories import search_user_by_username
+from config import SECRET_KEY, ALGORITHM
 
 async def get_current_user(token: str = Depends(oauth2)):
     """ Esta función se puede implementar para obtener el usuario actual a partir del token de autenticación."""

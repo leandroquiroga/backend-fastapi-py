@@ -1,4 +1,4 @@
-from repositories import users
+from repositories.user_repository import users
 
 def exist_id(id: int) -> bool:
     # Verifica si el ID existe en la lista de usuarios

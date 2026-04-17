@@ -14,7 +14,7 @@ class UserCreate(BaseModel):
 class LoginRequest(BaseModel):
   """DTO para login (POST /login)"""
   username: str = Field(..., min_length=3, max_length=20)
-  password: str = Field(..., min_length=6, max_length=16)
+  password: str = Field(..., min_length=6, max_length=100)
 
 
 class UserResponse(BaseModel):

@@ -10,10 +10,8 @@ ALGORITHM = "HS256"
 # Instancia de PasswordHash para el manejo de contraseñas.
 password_hash = PasswordHash.recommended()
 
-DUMMY_HASED_PASSWORD = password_hash.hash("password123")
 # Instancia de OAuth2PasswordBearer para la autenticacion.
-oauth2 = OAuth2PasswordBearer(tokenUrl="token")
-
+oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

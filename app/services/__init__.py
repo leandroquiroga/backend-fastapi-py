@@ -6,5 +6,5 @@ from .user_services import (
 
 from .auth_services import (
     get_current_user, # type: ignore
-    search_user_db, # type: ignore
+    authenticate_user, # type: ignore
 )

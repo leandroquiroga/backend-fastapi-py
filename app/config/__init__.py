@@ -1,0 +1,1 @@
+from .setting import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM # type: ignore

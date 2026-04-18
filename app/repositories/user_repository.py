@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from models import User
+from models import User, UserResponse
 from typing import List
 from utilities.auth_utilities import get_password_hash
 
@@ -49,6 +49,16 @@ def search_user_by_id(id: int) -> User:
     )
 
 
+def search_user_by_user_name_response(username: str) -> UserResponse | None:
+    """Busca usuario por username (para respuesta)"""
+    user = next((u for u in users if u.username == username), None)
+    if user:
+        return UserResponse.model_validate(user)  # Devuelve solo datos no sensibles
+    return None
+  
 def search_user_by_username(username: str) -> User | None:
     """Busca usuario por username (para autenticación)"""
-    return next((u for u in users if u.username == username), None)
+    user = next((u for u in users if u.username == username), None)
+    if user:
+        return user  # Devuelve el usuario completo, incluyendo datos sensibles
+    return None

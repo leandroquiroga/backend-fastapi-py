@@ -1,10 +1,10 @@
 from .user_services import (
-    create_user,# type: ignore
-    update_user,# type: ignore
-    delete_user_id, # type: ignore
+    create_user,
+    update_user,
+    delete_user_id, 
 )
 
 from .auth_services import (
-    get_current_user, # type: ignore
-    authenticate_user, # type: ignore
+    get_current_user, 
+    authenticate_user, 
 )

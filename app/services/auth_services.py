@@ -1,7 +1,7 @@
 import jwt as pyjwt
 from fastapi import HTTPException, status, Depends
 from utilities import oauth2, verify_password
-from models import User
+from models import  UserResponse
 from repositories import search_user_by_username,search_user_by_user_name_response
 from config import SECRET_KEY, ALGORITHM
 
@@ -26,7 +26,7 @@ async def get_current_user(token: str = Depends(oauth2)):
       
     return user
   
-def authenticate_user(username: str, password: str) -> User:
+def authenticate_user(username: str, password: str) -> UserResponse:
     """Esta función se puede implementar para autenticar al usuario utilizando el token"""
     user = search_user_by_username(username)
     if not user:
@@ -34,4 +34,4 @@ def authenticate_user(username: str, password: str) -> User:
     if not verify_password(password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password has not been verified")
     
-    return user
+    return UserResponse.model_validate(user)

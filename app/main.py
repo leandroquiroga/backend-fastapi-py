@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from routes import user_router, auth_router
 from contextlib import asynccontextmanager
-from config import close_connection, get_database
+from config import close_connection, get_database, create_indexes
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -9,6 +9,7 @@ async def lifespan(app: FastAPI):
     # Startup: se ejecuta al iniciar
     print("🚀 Servidor iniciando...")
     get_database()  # Inicializa la conexión a la base de datos
+    create_indexes()  # Asegura que los índices estén creados
     yield
     # Shutdown: se ejecuta al apagar
     print("🛑 Servidor apagándose...")

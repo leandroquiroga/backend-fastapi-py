@@ -36,3 +36,10 @@ def close_connection():
         _client = None
         _db = None
         print("✅ Connection to MongoDB closed")
+        
+def create_indexes():
+    """Crea indices unicos en la coleccion de usuarios"""
+    collection = get_users_collection()
+    # collection.create_index([("email", ASCENDING), ("username", ASCENDING)])
+    collection.create_index("email", unique=True)
+    collection.create_index("username", unique=True)

@@ -1,22 +1,14 @@
 from fastapi import HTTPException, status
 from datetime import datetime, timezone
-from repositories import search_user_by_id, search_user_by_email, insert_user_db, update_user_db, delete_user_db
+from repositories import search_user_by_id, insert_user_db, update_user_db, delete_user_db
 from models import UserDB, UserCreate, UserUpdate
 from utilities.auth_utilities import get_password_hash
 from typing import Any
+from pymongo.errors import DuplicateKeyError
 
 def create_user(user_data: UserCreate) -> UserDB:
     """Crea un nuevo usuario (valida unicidad de email)"""
-    
-    # Valida que el email no exista
-    user_email = search_user_by_email(user_data.email)
-    
-    if user_email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-    
+
     # Preparar documento SIN _id (MongoDB lo genera automáticamente)
     user_doc: dict[str, Any] = {
         "username": user_data.username,
@@ -29,9 +21,28 @@ def create_user(user_data: UserCreate) -> UserDB:
         "updated_at": datetime.now(timezone.utc)
     }
     
-    # Insertar y obtener UserDB con _id generado
-    new_user = insert_user_db(user_doc)
-    return new_user
+    try:
+        # Insertar y obtener UserDB con _id generado
+        new_user = insert_user_db(user_doc)
+        return new_user
+    except DuplicateKeyError as e:
+        error = str(e)
+        
+        if "email" in error or "dup key: { email" in error:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
+        elif "username" in error or "dup key: { username" in error:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already taken"
+            )
+        else: 
+            raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error creating user"
+        )
 
 def update_user(user_id: str, update_data: UserUpdate) -> UserDB:
     """Actualiza un usuario existente (solo campos enviados)"""

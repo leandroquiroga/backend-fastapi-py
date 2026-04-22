@@ -21,6 +21,7 @@ def search_user_by_id(id: str) -> UserDB:
         raise HTTPException(
             status_code=400, detail=f"Invalid user ID: {id}"
         )
+        
     collection = get_users_collection()
     user_doc = collection.find_one({"_id": ObjectId(id)})
     
@@ -51,17 +52,6 @@ def search_user_by_user_name_response(username: str) -> UserResponse | None:
         )
     return UserResponse.model_validate(user)  # Devuelve solo datos no sensibles
 
-def search_user_by_email(email: str) -> UserDB | None:
-    """Busca usuario por email (para validación de unicidad)"""
-    collection = get_users_collection()
-    user_doc = collection.find_one({"email": email})
-    
-    if user_doc:
-        raise HTTPException(
-            status_code=400, detail=f"User with email '{email}' already registered"
-        )
-    return UserDB(**user_doc) if user_doc else None
-  
 def insert_user_db(user_doc: dict[str, Any]) -> UserDB:
     """Inserta un nuevo usuario en la base de datos"""
     collection = get_users_collection()

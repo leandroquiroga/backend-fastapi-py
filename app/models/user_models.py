@@ -2,8 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from bson import ObjectId
 from datetime import datetime
 from utilities import utc_now
-
-
+from enum import Enum
 
 # Helper para manejar ObjectId de MongoDB
 class PyObjectId(ObjectId):
@@ -32,6 +31,13 @@ class PyObjectId(ObjectId):
         raise ValueError("Invalid ObjectId")
 
 
+class UserRole(str, Enum):
+  """Roles de usuario para control de acceso"""
+  ADMIN = "admin"
+  USER = "user"
+  GUEST = "guest"
+  
+
 # Modelos de usuario 
 class UserDB(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
@@ -41,8 +47,10 @@ class UserDB(BaseModel):
     username: str = Field(..., min_length=3, max_length=20)
     age: int = Field(..., ge=12, le=120)
     password_hash: str
+    role: UserRole = Field(default=UserRole.USER)
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
+    role: UserRole = Field(default=UserRole.USER)
     
     class Config:
         populate_by_name = True
@@ -58,6 +66,7 @@ class UserCreate(BaseModel):
   username: str = Field(..., min_length=3, max_length=20)
   age: int = Field(..., ge=12, le=120)
   password: str = Field(..., min_length=6, max_length=16)
+  role: UserRole = Field(default=UserRole.USER)
 
 
 class LoginRequest(BaseModel):
@@ -77,13 +86,13 @@ class UserUpdate(BaseModel):
 
 class UserResponse(BaseModel):
   """DTO para respuestas GET - sin datos sensibles"""
-  id: str = Field(..., alias="_id")
+  id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
   name: str
   surname: str
   email: EmailStr
   username: str
   age: int
-
+  role: UserRole = Field(default=UserRole.USER)
   class Config:
     from_attributes = True
     populate_by_name = True

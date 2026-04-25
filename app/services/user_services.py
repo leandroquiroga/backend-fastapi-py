@@ -17,6 +17,7 @@ def create_user(user_data: UserCreate) -> UserDB:
         "password_hash": get_password_hash(user_data.password),
         "surname": user_data.surname,
         "email": user_data.email,
+        "role": user_data.role,
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc)
     }
@@ -65,10 +66,12 @@ def update_user(user_id: str, update_data: UserUpdate) -> UserDB:
 
 def delete_user_id(id: str) -> str:
     """Elimina un usuario por ID"""
-    # Validar que el usuario exista (lanza 404 si no)
     search_user_by_id(id)
-    
     # Eliminar en BD
-    delete_user_db(id)
-    
-    return f"User with ID {id} deleted successfully"
+    if delete_user_db(id):
+        return f"User with ID {id} deleted successfully"
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error deleting user with ID {id}"
+        )

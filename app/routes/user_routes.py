@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Depends, HTTPException
 from models import UserResponse, UserCreate, UserDB, UserUpdate
 from services import (
     create_user,
@@ -7,6 +7,7 @@ from services import (
 )
 
 from repositories import search_user, search_user_by_id
+from utilities import require_rol
 
 user_router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 
@@ -38,8 +39,8 @@ async def put_update_user(id: str, user_data: UserUpdate) -> UserResponse:
     return UserResponse.model_validate(updated_user.model_dump(by_alias=True))
 
 
-@user_router.delete("/{id}", status_code=status.HTTP_200_OK)
-async def delete_user(id: str) -> dict[str, str]:
+@user_router.delete("/{id}")
+async def delete_user(id: str, user = Depends(require_rol(["admin"]))) -> dict[str, str]:
     """Elimina un usuario por ID"""
     message = delete_user_id(id)
     return {"message": message}

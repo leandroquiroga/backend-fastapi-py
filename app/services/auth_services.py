@@ -5,7 +5,7 @@ from models import  UserResponse
 from repositories import search_user_by_username,search_user_by_user_name_response
 from config import SECRET_KEY, ALGORITHM
 
-async def get_current_user(token: str = Depends(oauth2)):
+async def get_current_user(token: str = Depends(oauth2)) -> UserResponse:
     """ Esta función se puede implementar para obtener el usuario actual a partir del token de autenticación."""
     
     try:
@@ -28,10 +28,12 @@ async def get_current_user(token: str = Depends(oauth2)):
   
 def authenticate_user(username: str, password: str) -> UserResponse:
     """Esta función se puede implementar para autenticar al usuario utilizando el token"""
-    user = search_user_by_username(username)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    if not verify_password(password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password has not been verified")
-    
-    return UserResponse.model_validate(user)
+    try:
+        user = search_user_by_username(username)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        if not verify_password(password, user.password_hash):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password has not been verified")
+        return UserResponse.model_validate(user)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

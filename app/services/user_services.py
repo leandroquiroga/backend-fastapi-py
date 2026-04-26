@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status
 from datetime import datetime, timezone
 from repositories import search_user_by_id, insert_user_db, update_user_db, delete_user_db
-from models import UserDB, UserCreate, UserUpdate
-from utilities.auth_utilities import get_password_hash
+from models import UserDB, UserCreate, UserUpdate, ChangePasswordRequest
+from utilities.auth_utilities import get_password_hash, verify_password
 from typing import Any
 from pymongo.errors import DuplicateKeyError
 

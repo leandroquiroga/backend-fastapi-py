@@ -1,1 +1,1 @@
-from .user_models import UserCreate, LoginRequest, UserResponse, User, AuthToken, UserDB, UserUpdate
+from .user_models import UserCreate, LoginRequest, UserResponse, User, AuthToken, UserDB, UserUpdate, ChangePasswordRequest

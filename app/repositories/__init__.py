@@ -6,5 +6,6 @@ from .user_repository import (
   search_user_by_user_name_response,
   insert_user_db,
   update_user_db,
-  delete_user_db
+  delete_user_db,
+  change_user_password
 )

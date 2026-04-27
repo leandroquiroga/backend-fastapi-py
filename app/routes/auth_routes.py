@@ -3,14 +3,14 @@ from datetime import timedelta
 
 from fastapi.security import OAuth2PasswordRequestForm
 from services import authenticate_user, get_current_user
-from utilities import create_access_token
+from utilities import create_access_token, login_rate_limiter
 from models import UserResponse
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 
 auth_router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 
 @auth_router.post("/login")
-async def login(form: OAuth2PasswordRequestForm = Depends()) -> dict[str, bytes | str]:
+async def login(form: OAuth2PasswordRequestForm = Depends(), _: None = Depends(login_rate_limiter)) -> dict[str, bytes | str]:
     user = authenticate_user(form.username, form.password)
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     access_token = create_access_token(

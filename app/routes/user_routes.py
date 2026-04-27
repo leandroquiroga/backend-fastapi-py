@@ -3,20 +3,19 @@ from models import UserResponse, UserCreate, UserDB, UserUpdate, ChangePasswordR
 from services import create_user, delete_user_id, update_user
 
 from repositories import search_user, search_user_by_id, change_user_password
-from utilities import require_rol
+from utilities import require_rol, change_password_rate_limiter, get_user_rate_limiter, get_users_rate_limiter, update_user_rate_limiter
 
 user_router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 
 
 @user_router.get("/", response_model=list[UserResponse], status_code=status.HTTP_200_OK)
 async def get_users(
-    skip: int = 0, limit: int = 10, current_user=Depends(require_rol(["admin", "user"]))
+    skip: int = 0, limit: int = 10, current_user=Depends(require_rol(["admin", "user"])), _: None = Depends(get_users_rate_limiter)
 ):
     """Lista todos los usuarios con paginación"""
     users_db = search_user(skip, limit)
 
     if current_user.role != "admin":
-
         users_db = [user for user in users_db if user.role != "admin"]
     return [
         UserResponse.model_validate(user.model_dump(by_alias=True)) for user in users_db
@@ -25,7 +24,7 @@ async def get_users(
 
 @user_router.get("/{id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
 async def get_user_by_id(
-    id: str, current_user=Depends(require_rol(["admin", "user"]))
+    id: str, current_user=Depends(require_rol(["admin", "user"])), _: None = Depends(get_user_rate_limiter)
 ) -> UserDB:
     """Obtiene un usuario por ID (solo tu perfil o admin puede ver cualquiera)"""
     user = search_user_by_id(id)
@@ -55,7 +54,7 @@ async def post_create_user(
 
 @user_router.put("/change-password", status_code=status.HTTP_200_OK)
 async def change_password(
-    data: ChangePasswordRequest, current_user=Depends(require_rol(["admin", "user"]))
+    data: ChangePasswordRequest, current_user=Depends(require_rol(["admin", "user"])), _: None = Depends(change_password_rate_limiter)
 ):
     """Cambia la contraseña del usuario autenticado (siempre tu propia contraseña)"""
     message = change_user_password(str(current_user.id), data)
@@ -64,7 +63,7 @@ async def change_password(
 
 @user_router.put("/{id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
 async def put_update_user(
-    id: str, user_data: UserUpdate, current_user=Depends(require_rol(["admin", "user"]))
+    id: str, user_data: UserUpdate, current_user=Depends(require_rol(["admin", "user"])), _: None = Depends(update_user_rate_limiter)
 ) -> UserResponse:
     """Actualiza un usuario existente (solo tu perfil o admin puede actualizar cualquiera)"""
 
